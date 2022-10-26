@@ -73,8 +73,12 @@
               <q-btn round color="primary" icon="add" @click="dialog = true" />
             </div>
           </div>
+          <!-- table -->
           <div class="q-pt-md q-px-md">
-            <q-table title="Contatos" :rows="listUsers" :columns="columns" row-key="id" dense>
+            <q-table title="Contatos" :rows="filterContacts" :columns="columns" row-key="id" dense>
+              <template v-slot:no-data="props" )>
+                <div class="alertDataNotFound">Nenhum contato encontrado!</div>
+              </template>
               <template v-slot:body-cell-name="props">
                 <q-td :style="dynamicRowStyle(props.row.phone)" :props="props">
                   <div>{{props.row.name}}</div>
@@ -109,13 +113,17 @@
       max-width: 90vw;
       color: rgb(0, 110, 255);
     }
+    .alertDataNotFound {
+      font-size: 1rem;
+      padding: 1rem;
+    }
   </style>
 
   <script>
     const app = Vue.createApp({
       data() {
         return {
-          name: '',
+          search: '',
           phone: '',
           dialog: false,
           confirmDialog: false,
@@ -143,6 +151,11 @@
           ],
         }
       },
+      computed: {
+        filterContacts() {
+          return this.listUsers.filter((el) => el.name.toLowerCase().includes(this.search.toLowerCase()));
+        }
+      },
       methods: {
         dynamicRowStyle(phone) {
           let ddd = phone.substr(1, 2);
@@ -167,6 +180,7 @@
           this.dialog = true;
         },
         deleteItem(data) {
+          this.listUsers.splice(this.listUsers.indexOf(data), 1);
           this.confirmDialog = true;
           console.log(data)
         },
