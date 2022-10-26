@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <link
+    href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons|Material+Icons+Outlined"
+    rel="stylesheet" type="text/css">
+  <link href="https://use.fontawesome.com/releases/v6.1.1/css/all.css" rel="stylesheet" type="text/css">
+  <link href="https://cdn.jsdelivr.net/npm/quasar@2.10.0/dist/quasar.prod.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+  <div id="q-app">
+    <q-layout>
+      <q-header elevated class="bg-primary text-white">
+        <q-toolbar>
+          <q-toolbar-title>
+            Lista de contatos
+          </q-toolbar-title>
+        </q-toolbar>
+      </q-header>
+      <!-- dialog create and edit contact  -->
+      <q-dialog v-model="dialog">
+        <q-card class="dialogAdd bg-white q-pa-md">
+          <div class="q-py-md">
+            <q-input outlined v-model="user.name" label="Nome" hint="Nome e sobrenome" />
+          </div>
+          <div class="q-py-md">
+            <q-input outlined v-model="user.phone" label="Telefone" mask="(##) ####-####" hint="(xx) xxxx-xxxx."
+              :rules="[val => !!val || 'O telefone é obrigatorio']" />
+          </div>
+          <q-card-actions align="right">
+            <q-btn flat label="CANCELAR" color="red" v-close-popup></q-btn>
+            <q-btn flat label="OK" color="primary" @click="saveUser"></q-btn>
+          </q-card-actions>
+        </q-card>
+      </q-dialog>
+      <!-- dialog confirm delete contact -->
+      <q-dialog v-model="confirmDialog">
+        <q-card>
+          <div>
+            <q-card-section class="row items-center">
+              <div>
+                <q-avatar icon="warning" color="red" text-color="white" />
+              </div>
+              <div>
+                <span class="q-ml-sm">Tem certeza que deseja apagar esse contato?</span>
+              </div>
+            </q-card-section>
+          </div>
+          <div>
+            <q-card-actions align="right">
+              <div>
+                <q-btn flat label="Cancelar" color="primary" v-close-popup />
+              </div>
+              <q-btn flat label="Apagar" color="red" v-close-popup />
+            </q-card-actions>
+          </div>
+        </q-card>
+      </q-dialog>
+      <!-- page with table -->
+      <q-page-container class="fullscreen column  justify-center items-center content-center">
+        <div style="width: 700px; max-width: 90vw" class="q-pa-md">
+          <div class="full-width row no-wrap justify-between items-center content-center q-pt-xl q-px-md">
+            <div class="full-width">
+              <q-input class="" v-model="search" outlined type="search">
+                <template v-slot:append>
+                  <q-icon name="search" />
+                </template>
+              </q-input>
+            </div>
+            <div class="q-pl-md">
+              <q-btn round color="primary" icon="add" @click="dialog = true" />
+            </div>
+          </div>
+          <div class="q-pt-md q-px-md">
+            <q-table title="Contatos" :rows="listUsers" :columns="columns" row-key="id" dense>
+              <template v-slot:body-cell-name="props">
+                <q-td :style="dynamicRowStyle(props.row.phone)" :props="props">
+                  <div>{{props.row.name}}</div>
+                </q-td>
+              </template>
+              <template v-slot:body-cell-phone="props">
+                <q-td :style="dynamicRowStyle(props.row.phone)" :props="props">
+                  <div>{{props.row.phone}}</div>
+                </q-td>
+              </template>
+              <template v-slot:body-cell-action="props">
+                <q-td :props="props">
+                  <q-btn dense round flat color="blue" icon="edit" @click="editItem(props.row)"></q-btn>
+                  <q-btn dense round flat color="red" icon="delete" @click="deleteItem(props.row)"></q-btn>
+                </q-td>
+              </template>
+            </q-table>
+          </div>
+        </div>
+      </q-page-container>
+  </div>
+  </div>
+
+  </q-layout>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/quasar@2.10.0/dist/quasar.umd.prod.js"></script>
+  <style>
+    .dialogAdd {
+      width: 700px;
+      max-width: 90vw;
+      color: rgb(0, 110, 255);
+    }
+  </style>
+
+  <script>
+    const app = Vue.createApp({
+      data() {
+        return {
+          name: '',
+          phone: '',
+          dialog: false,
+          confirmDialog: false,
+          user: {
+            id: undefined,
+            phone: undefined,
+            name: undefined,
+          },
+          columns: [
+            { name: 'name', required: true, label: 'Nome', align: 'left', field: row => row.name, format: val => `${val}`, sortable: true },
+            { name: 'phone', align: 'center', label: 'phone', field: 'phone', sortable: true },
+            { name: "action", align: "center", label: "", field: "" },
+          ],
+          listUsers: [
+            {
+              id: 1,
+              name: 'Luiz Claudio',
+              phone: '(61)8301-7727',
+            },
+            {
+              id: 2,
+              name: 'Cazarin Junior',
+              phone: '(11)8301-7727',
+            },
+          ],
+        }
+      },
+      methods: {
+        dynamicRowStyle(phone) {
+          let ddd = phone.substr(1, 2);
+          if (ddd === "11") {
+            return 'color: rgb(0, 110, 255);'
+          } else return '';
+        },
+        saveUser() {
+          if (!this.user.id) {
+            this.user.id = Math.floor(Date.now() * Math.random()).toString(36);
+            this.listUsers.push(Object.assign({}, this.user));
+          } else {
+            // editar contato
+          }
+          this.dialog = false;
+          this.user.name = '';
+          this.user.phone = '';
+          this.user.id = undefined;
+        },
+        editItem(data) {
+          this.user = Object.assign({}, data);
+          this.dialog = true;
+        },
+        deleteItem(data) {
+          this.confirmDialog = true;
+          console.log(data)
+        },
+      }
+    })
+
+    app.use(Quasar)
+    app.mount('#q-app')
+  </script>
+</body>
+
+</html>
