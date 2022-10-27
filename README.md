@@ -1,1 +1,1 @@
-# Vue---Quasar-UMD-CRUD
+# Vue Quasar UMD CRUD
