@@ -19,12 +19,12 @@
             <!-- name -->
             <div class="q-py-md">
               <!-- val => val && val.length > 7 || 'Informe um nome valido', -->
-              <q-input outlined v-model="user.name" label="Nome" lazy-rules :rules="[ 
+              <q-input outlined v-model="contact.name" label="Nome" lazy-rules :rules="[ 
                 val => val && val.split(' ')[0].length >= 3 || 'Informe um nome valido']" hint=" Nome e sobrenome" />
             </div>
             <!-- phone -->
             <div class="q-py-md">
-              <q-input outlined v-model="user.phone" label="Telefone" hint="(xx) xxxx-xxxx." lazy-rules :rules="[
+              <q-input outlined v-model="contact.phone" label="Telefone" hint="(xx) xxxx-xxxx." lazy-rules :rules="[
                 val => val && val.length > 0 || 'Informe um telefone valido!']" />
             </div>
             <q-card-actions align="right">
@@ -128,7 +128,7 @@
           search: '',
           dialogContact: false,
           confirmDialog: false,
-          user: {
+          contact: {
             id: undefined,
             phone: undefined,
             name: undefined,
@@ -138,7 +138,7 @@
             { name: 'phone', align: 'center', label: 'phone', field: 'phone', sortable: true },
             { name: "action", align: "center", label: "", field: "" },
           ],
-          listUsers: [
+          lisetContacts: [
             {
               id: 1,
               name: 'Luiz Claudio',
@@ -154,21 +154,21 @@
       },
       computed: {
         filterContacts() {
-          return this.listUsers.filter((el) => el.name.toLowerCase().includes(this.search.toLowerCase()));
+          return this.lisetContacts.filter((el) => el.name.toLowerCase().includes(this.search.toLowerCase()));
         },
       },
       methods: {
         onSubmit() {
-          if (!this.user.id) {
+          if (!this.contact.id) {
             // new contact
-            this.user.id = Math.floor(Date.now() * Math.random()).toString(36);
-            this.listUsers.push(Object.assign({}, this.user));
+            this.contact.id = Math.floor(Date.now() * Math.random()).toString(36);
+            this.lisetContacts.push(Object.assign({}, this.contact));
             this.onReset();
           } else {
             // edit contact
-            let user = this.listUsers.find((el) => el.id === this.user.id);
-            user.name = this.user.name;
-            user.phone = this.user.phone;
+            let contact = this.lisetContacts.find((el) => el.id === this.contact.id);
+            contact.name = this.contact.name;
+            contact.phone = this.contact.phone;
           }
           this.dialogContact = false;
         },
@@ -182,20 +182,20 @@
           this.dialogContact = true;
         },
         editContact(data) {
-          this.user = Object.assign({}, data);
+          this.contact = Object.assign({}, data);
           this.dialogContact = true;
         },
         confirmDeleteContact() {
-          this.listUsers.splice(this.listUsers.indexOf(this.user), 1);
+          this.lisetContacts.splice(this.lisetContacts.indexOf(this.contact), 1);
         },
         deleteContact(data) {
           this.confirmDialog = true;
-          this.user = data;
+          this.contact = data;
         },
         onReset() {
-          this.user.id = undefined;
-          this.user.name = undefined;
-          this.user.phone = undefined;
+          this.contact.id = undefined;
+          this.contact.name = undefined;
+          this.contact.phone = undefined;
         }
       }
     })
