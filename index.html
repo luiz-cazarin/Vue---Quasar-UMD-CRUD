@@ -18,12 +18,13 @@
           <q-form @submit="onSubmit" class="q-gutter-md">
             <!-- name -->
             <div class="q-py-md">
-              <q-input outlined v-model="contact.name" label="Nome" lazy-rules :rules="[ 
-                val => val && val.split(' ')[0].length >= 3 || 'Informe um nome valido']" hint=" Nome e sobrenome" />
+              <q-input outlined v-model="contact.name" label="Nome" lazy-rules :rules="[
+                val => val && val.split(' ')[0].length >= 3 || 'Informe um nome valido',
+                val => val && val.trim().length >= 7 || 'Informe o nome e o sobrenome' + val.length]" hint=" Nome e sobrenome" />
             </div>
             <!-- phone -->
             <div class="q-py-md">
-              <q-input outlined v-model="contact.phone" label="Telefone" hint="(xx) xxxx-xxxx." lazy-rules :rules="[
+              <q-input outlined v-model="contact.phone" label="Telefone" mask="(##) ####-####" hint="(xx) xxxx-xxxx." lazy-rules :rules="[
                 val => val && val.length > 0 || 'Informe um telefone valido!']" />
             </div>
             <!-- buttons -->
@@ -142,12 +143,12 @@
             {
               id: 1,
               name: 'Luiz Claudio',
-              phone: '(61)8301-7727',
+              phone: '(61) 8301-7727',
             },
             {
               id: 2,
               name: 'Cazarin Junior',
-              phone: '(11)8301-7727',
+              phone: '(11) 8301-7727',
             },
           ],
         }
